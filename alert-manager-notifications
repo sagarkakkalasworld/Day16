@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: react-demo
+  namespace: monitoring  
+  labels:
+    release: prometheus
+spec:
+  route:
+    groupBy: ['alertname']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 1h
+    continue: true
+    receiver: 'slack-notification'
+    routes:
+      - receiver: 'slack-notification'
+        continue: true
+  receivers:
+    - name: 'slack-notification'
+      slackConfigs:
+        - channel: '#test-alerts'
+          apiURL:
+            name: slack-webhook
+            key: slack_webhook_url
+          title: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          text: "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}"
