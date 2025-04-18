@@ -1,3 +1,5 @@
-    alertmanagerConfigSelector:
-      matchLabels:
-        release: prometheus
+kubectl patch alertmanager prometheus-kube-prometheus-alertmanager \
+  -n monitoring \
+  --type merge \
+  -p '{"spec": {"alertmanagerConfigSelector": {"matchLabels": {"release": "prometheus"}}}}'
+
