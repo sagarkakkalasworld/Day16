@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: react-nginx-cpu-alert
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: alert-manager-rules
+      rules:
+        - alert: LowPodCPUUsage
+          expr: |
+            sum(rate(container_cpu_usage_seconds_total{namespace="crd"}[5m])) * 100 < 70
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CPU usage is unusually low in the crd namespace."
+            description: |
+              The CPU usage in the react-nginx namespace has been below 70% for the last 5 minutes.
+              Check for potential issues with workload scaling or pod health.
